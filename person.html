@@ -158,6 +158,7 @@
             <li><a href="/compare.html?a=${p.slug}">Сравнить с другой персоной</a></li>
             <li><a href="/catalog.html?cat=${cat?.id}">Все в категории «${BG.escapeHtml(cat?.name || '')}»</a></li>
             <li><a href="/catalog.html?era=${era?.id}">Все в эпохе «${BG.escapeHtml(era?.name || '')}»</a></li>
+            <li><a href="/city.html?slug=${BG.cityKey(p.city)}">Все из города ${BG.escapeHtml(p.city)}</a></li>
           </ul>
         </div>
       </aside>
@@ -167,6 +168,12 @@
       <h2 style="font-family:var(--serif); margin-bottom:24px">Современники и соседи по эпохе</h2>
       <div class="cards" id="related"></div>
     </section>
+
+    <section id="city-mates-block" style="margin-top:48px; padding-top:32px; border-top:1px solid var(--line); display:none">
+      <h2 style="font-family:var(--serif); margin-bottom:8px">Земляки из города ${BG.escapeHtml(p.city)}</h2>
+      <p style="color:var(--ink-mute); margin-bottom:24px">Другие знаменитые уроженцы того же города</p>
+      <div class="cards" id="city-mates"></div>
+    </section>
   `;
 
   // related: same era, not self
@@ -174,6 +181,14 @@
   document.getElementById('related').innerHTML = sameEra.length
     ? sameEra.map(BG.personCard).join('')
     : '<p style="color:var(--ink-mute)">Пока нет других персон в этой эпохе.</p>';
+
+  // city mates: same city, not self
+  const cKey = BG.cityKey(p.city);
+  const mates = (BG.state.byCity[cKey] || []).filter(x => x.slug !== p.slug).slice(0, 4);
+  if (mates.length) {
+    document.getElementById('city-mates-block').style.display = 'block';
+    document.getElementById('city-mates').innerHTML = mates.map(BG.personCard).join('');
+  }
 })();
 </script>
 </body>

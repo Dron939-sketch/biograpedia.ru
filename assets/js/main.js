@@ -53,6 +53,17 @@ const initialsOf = (name) => {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 };
 
+const TR_MAP = {
+  'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i',
+  'й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t',
+  'у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'',
+  'э':'e','ю':'yu','я':'ya'
+};
+const slugify = (s) => String(s).toLowerCase().split('').map(c => TR_MAP[c] !== undefined ? TR_MAP[c] : c)
+  .join('').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+const cityKey = (city) => slugify(city);
+
 /* ---------- avatar (deterministic SVG) ---------- */
 
 const PALETTES = [
@@ -108,9 +119,16 @@ async function loadData() {
   if (state.data) return state.data;
   const res = await fetch(DATA_URL);
   state.data = await res.json();
+  state.byCity = {};
+  state.cityMeta = {};
   state.data.people.forEach((p) => {
     state.bySlug[p.slug] = p;
     (state.byCategory[p.category] = state.byCategory[p.category] || []).push(p);
+    const cKey = cityKey(p.city);
+    if (cKey) {
+      (state.byCity[cKey] = state.byCity[cKey] || []).push(p);
+      if (!state.cityMeta[cKey]) state.cityMeta[cKey] = { name: p.city, country: p.country, coords: p.coords };
+    }
   });
   return state.data;
 }
@@ -248,8 +266,7 @@ function mountHeader(activePath = '') {
     </a>
     <nav class="nav" aria-label="Главное меню">
       <a href="/catalog.html" class="${isActive('catalog')}">Все персоны</a>
-      <a href="/catalog.html?cat=writers" class="${isActive('writers')}">Писатели</a>
-      <a href="/catalog.html?cat=scientists" class="${isActive('scientists')}">Учёные</a>
+      <a href="/cities.html" class="${isActive('cities')}">Города</a>
       <a href="/compare.html" class="${isActive('compare')}">Сравнить</a>
       <a href="/blacklist/" class="${isActive('blacklist')}">Реестр HR</a>
     </nav>
@@ -283,6 +300,7 @@ function mountFooter() {
       <h4>Разделы</h4>
       <ul>
         <li><a href="/catalog.html">Все персоны</a></li>
+        <li><a href="/cities.html">Города и их люди</a></li>
         <li><a href="/catalog.html?era=20th">XX век</a></li>
         <li><a href="/catalog.html?era=19th">XIX век</a></li>
         <li><a href="/compare.html">Сравнить</a></li>
@@ -314,7 +332,7 @@ function mountFooter() {
 window.BG = {
   state, loadData, loadReports, $, $$,
   fmtDate, fmtYear, fmtLifespan, ageAtDeath, escapeHtml,
-  avatarSVG, icon, ICONS, initialsOf,
+  avatarSVG, icon, ICONS, initialsOf, slugify, cityKey,
   searchPeople, attachSearch,
   personCard, todayList, categoriesWithCounts, russianTodayDate,
   mountHeader, mountFooter,

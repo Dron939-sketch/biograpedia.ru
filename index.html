@@ -94,6 +94,19 @@
 <section class="section">
   <div class="container">
     <div class="section__header">
+      <h2 class="section__title"><small>Атлас</small>Города и их люди</h2>
+      <a class="section__link" href="/cities.html">Все города</a>
+    </div>
+    <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); margin-bottom:24px; max-width:62ch">
+      Где родились те, чьи имена пережили эпохи. Кликните город — увидите всех его уроженцев из нашей базы.
+    </p>
+    <div id="top-cities" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header">
       <h2 class="section__title"><small>Сравнить</small>Две судьбы рядом</h2>
     </div>
     <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); margin-bottom:24px; max-width:62ch">
@@ -163,6 +176,22 @@
   const featured = ['pushkin', 'mendeleev', 'tchaikovsky', 'gagarin', 'leonardo', 'curie', 'tsoi', 'bulgakov']
     .map(s => BG.state.bySlug[s]).filter(Boolean);
   document.getElementById('featured').innerHTML = featured.map(BG.personCard).join('');
+
+  // top cities
+  const cityList = Object.entries(BG.state.byCity)
+    .map(([k, ppl]) => ({ k, meta: BG.state.cityMeta[k], people: ppl }))
+    .sort((a, b) => b.people.length - a.people.length)
+    .slice(0, 8);
+  document.getElementById('top-cities').innerHTML = cityList.map(c => {
+    const word = c.people.length === 1 ? 'персона' : (c.people.length >= 2 && c.people.length <= 4 ? 'персоны' : 'персон');
+    return `<a class="cat-card" href="/city.html?slug=${c.k}" style="--cat-color:var(--accent)">
+      <span class="cat-card__icon">${BG.icon('crown')}</span>
+      <span>
+        <span class="cat-card__name">${BG.escapeHtml(c.meta.name)}</span>
+        <span class="cat-card__count">${c.people.length} ${word} · ${BG.escapeHtml(c.meta.country)}</span>
+      </span>
+    </a>`;
+  }).join('');
 
   // quote of day
   const day = new Date().getUTCDate() + new Date().getUTCMonth() * 31;

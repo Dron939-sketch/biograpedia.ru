@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Города и их знаменитые люди — Биографедия</title>
+<meta name="description" content="Атлас рождений: где появились на свет великие люди. Подборка по городам России и мира.">
+<meta name="theme-color" content="#FAFAF5">
+<link rel="canonical" href="https://biograpedia.ru/cities.html">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>
+  .city-block {
+    margin-bottom: 56px;
+  }
+  .city-block__head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .city-block__name {
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .city-block__name:hover { color: var(--accent); }
+  .city-block__country { color: var(--ink-mute); font-size: 14px; }
+  .city-block__count {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .country-section {
+    margin-bottom: 64px;
+  }
+  .country-section h2 {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 24px;
+    font-family: var(--sans);
+  }
+  .city-tip {
+    background: var(--bg-muted);
+    border-radius: 10px;
+    padding: 32px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .city-tip p { font-family: var(--serif); color: var(--ink-soft); max-width: 60ch; }
+  @media (max-width: 640px) {
+    .city-tip { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container" style="padding-top:48px; padding-bottom:48px">
+
+    <header style="margin-bottom:32px">
+      <span style="display:inline-block; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:12px">Атлас</span>
+      <h1 style="margin-bottom:12px">Города и их знаменитые люди</h1>
+      <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); max-width:62ch">
+        Где родились те, чьи имена пережили эпохи. Подборка по городам России и мира — кликните на город, чтобы увидеть всех его уроженцев.
+      </p>
+    </header>
+
+    <div id="cities-content"></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader('cities');
+  BG.mountFooter();
+
+  // group cities by country
+  const cityList = Object.entries(BG.state.byCity).map(([key, people]) => {
+    const meta = BG.state.cityMeta[key];
+    return { key, name: meta.name, country: meta.country, people };
+  });
+
+  // sort: by country (Russia first), then by count desc, then by name
+  const isRussia = (c) => /Росси|СССР|Российская|РСФСР/.test(c);
+  const russiaCountries = ['Россия', 'СССР', 'Российская империя', 'Россия / СССР', 'СССР / Россия', 'Российская империя / СССР'];
+  const byCountry = {};
+  cityList.forEach(c => {
+    (byCountry[c.country] = byCountry[c.country] || []).push(c);
+  });
+
+  // Sort countries: Russian first, then alphabetical
+  const countries = Object.keys(byCountry).sort((a, b) => {
+    const ra = isRussia(a) ? 0 : 1;
+    const rb = isRussia(b) ? 0 : 1;
+    if (ra !== rb) return ra - rb;
+    return a.localeCompare(b, 'ru');
+  });
+
+  const root = document.getElementById('cities-content');
+
+  // tip
+  root.innerHTML = `
+    <div class="city-tip">
+      <p>В нашей базе ${cityList.length} городов и ${BG.state.data.people.length} персон. Самые «биографо-богатые» города — Москва, Санкт-Петербург, Таганрог. Подсказка: <a href="/catalog.html">используйте каталог</a>, если ищете персону по имени.</p>
+      <a class="btn" href="/catalog.html">Открыть каталог →</a>
+    </div>
+  ` + countries.map(country => {
+    const cities = byCountry[country].sort((a, b) => b.people.length - a.people.length || a.name.localeCompare(b.name, 'ru'));
+    return `
+      <section class="country-section">
+        <h2>${BG.escapeHtml(country)}</h2>
+        ${cities.map(c => {
+          const word = c.people.length === 1 ? 'персона' : (c.people.length >= 2 && c.people.length <= 4 ? 'персоны' : 'персон');
+          return `
+            <div class="city-block">
+              <div class="city-block__head">
+                <a class="city-block__name" href="/city.html?slug=${c.key}">${BG.escapeHtml(c.name)}</a>
+                <span class="city-block__count">${c.people.length} ${word}</span>
+              </div>
+              <div class="cards">${c.people.slice(0, 8).map(BG.personCard).join('')}</div>
+              ${c.people.length > 8 ? `<div style="margin-top:16px; text-align:right"><a href="/city.html?slug=${c.key}">Все ${c.people.length} →</a></div>` : ''}
+            </div>`;
+        }).join('')}
+      </section>`;
+  }).join('');
+})();
+</script>
+</body>
+</html>

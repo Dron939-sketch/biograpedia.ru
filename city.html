@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title id="page-title">Город — Биографедия</title>
+<meta name="description" id="page-desc" content="Знаменитые уроженцы города.">
+<meta name="theme-color" content="#FAFAF5">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>
+  .city-hero {
+    background: var(--bg-muted);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+  }
+  .city-hero h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; margin-bottom: 8px; }
+  .city-hero__country { color: var(--ink-mute); font-family: var(--serif); font-size: 1.1rem; }
+  .city-hero__stats {
+    text-align: right;
+  }
+  .city-hero__num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .city-hero__label {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .city-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .city-cat-chip {
+    padding: 8px 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .city-cat-chip strong { color: var(--ink); font-family: var(--serif); }
+  @media (max-width: 640px) {
+    .city-hero { grid-template-columns: 1fr; }
+    .city-hero__stats { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container" style="padding-top:32px; padding-bottom:48px" id="root"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader('cities');
+  BG.mountFooter();
+
+  const slug = new URLSearchParams(location.search).get('slug');
+  const people = BG.state.byCity[slug] || [];
+  const meta = BG.state.cityMeta[slug];
+  const root = document.getElementById('root');
+
+  if (!meta) {
+    root.innerHTML = `<div class="empty-state"><h3>Город не найден</h3><p>Проверьте ссылку или <a href="/cities.html">откройте все города</a>.</p></div>`;
+    return;
+  }
+
+  // SEO
+  const ttl = `Знаменитые люди — ${meta.name}`;
+  document.getElementById('page-title').textContent = ttl + ' · Биографедия';
+  document.title = ttl + ' · Биографедия';
+  document.getElementById('page-desc').setAttribute('content', `Знаменитые уроженцы города ${meta.name}: ${people.slice(0, 5).map(p => p.shortName).join(', ')}${people.length > 5 ? ' и другие' : ''}.`);
+
+  // category counts
+  const catCounts = {};
+  people.forEach(p => catCounts[p.category] = (catCounts[p.category] || 0) + 1);
+
+  // sort: by birth date
+  people.sort((a, b) => a.birth.localeCompare(b.birth));
+
+  const word = people.length === 1 ? 'персона' : (people.length >= 2 && people.length <= 4 ? 'персоны' : 'персон');
+
+  root.innerHTML = `
+    <nav class="person__breadcrumb"><a href="/">Главная</a> · <a href="/cities.html">Города</a> · <span>${BG.escapeHtml(meta.name)}</span></nav>
+
+    <div class="city-hero">
+      <div>
+        <h1>Знаменитые уроженцы города ${BG.escapeHtml(meta.name)}</h1>
+        <div class="city-hero__country">${BG.escapeHtml(meta.country)}</div>
+      </div>
+      <div class="city-hero__stats">
+        <div class="city-hero__num">${people.length}</div>
+        <div class="city-hero__label">${word} в базе</div>
+      </div>
+    </div>
+
+    ${Object.keys(catCounts).length ? `
+      <div class="city-cat-grid">
+        ${BG.state.data.categories.map(c => {
+          if (!catCounts[c.id]) return '';
+          return `<span class="city-cat-chip"><strong>${catCounts[c.id]}</strong> ${BG.escapeHtml(c.name.toLowerCase())}</span>`;
+        }).join('')}
+      </div>` : ''}
+
+    <h2 style="font-family:var(--serif); margin-bottom:20px">Все персоны — от старых к новым</h2>
+    <div class="cards">${people.map(BG.personCard).join('')}</div>
+
+    <section style="margin-top:64px; padding-top:32px; border-top:1px solid var(--line)">
+      <h2 style="font-family:var(--serif); margin-bottom:20px">Соседние города</h2>
+      <div class="cards" id="neighbors"></div>
+    </section>
+  `;
+
+  // neighbors: same country, different city
+  const neighbors = Object.entries(BG.state.byCity)
+    .filter(([k, ppl]) => k !== slug && ppl.some(p => p.country === meta.country))
+    .slice(0, 6)
+    .map(([k, ppl]) => {
+      const cm = BG.state.cityMeta[k];
+      return `<a class="card" href="/city.html?slug=${k}" style="text-decoration:none">
+        <div class="card__portrait" style="display:grid; place-items:center; aspect-ratio:4/3">
+          <span style="font-family:var(--serif); font-size:1.5rem; color:var(--ink); font-weight:600">${BG.escapeHtml(cm.name)}</span>
+        </div>
+        <div class="card__body">
+          <div class="card__title">${BG.escapeHtml(cm.name)}</div>
+          <div class="card__meta">${BG.escapeHtml(cm.country)} · ${ppl.length} ${ppl.length === 1 ? 'персона' : (ppl.length >= 2 && ppl.length <= 4 ? 'персоны' : 'персон')}</div>
+          <div class="card__tagline">${ppl.slice(0, 3).map(p => BG.escapeHtml(p.shortName)).join(', ')}${ppl.length > 3 ? '…' : ''}</div>
+        </div>
+      </a>`;
+    }).join('');
+
+  document.getElementById('neighbors').innerHTML = neighbors || '<p style="color:var(--ink-mute)">Других городов из этой страны пока нет.</p>';
+})();
+</script>
+</body>
+</html>
