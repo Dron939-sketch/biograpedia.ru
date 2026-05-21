@@ -1,0 +1,17 @@
+/* TEAM */
+Maintainers: проект «Биографедия»
+Contact: см. README
+
+/* SITE */
+Last update: 2026-05-21
+Language: Russian
+Doctype: HTML5
+Standards: WCAG AA, OpenGraph, JSON-LD Person, PWA manifest
+Stack: Static HTML + CSS + Vanilla JS
+Hosting: GitHub Pages / любой CDN
+
+/* PHILOSOPHY */
+- Точность важнее охвата
+- Без рекламы и поп-апов
+- Открытый код, открытые данные
+- Структурированные факты, а не полотно текста
