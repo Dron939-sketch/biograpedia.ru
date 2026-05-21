@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /blacklist/add.html
+Disallow: /blacklist/dispute.html
+
+Sitemap: https://biograpedia.ru/sitemap.xml

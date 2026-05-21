@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Сравнение персон — Биографедия</title>
+<meta name="description" content="Сравните двух людей бок о бок: даты, эпохи, наследие, пересечения судеб.">
+<meta name="theme-color" content="#FAFAF5">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container">
+    <section class="compare">
+      <header style="margin-bottom:24px">
+        <h1 style="margin-bottom:8px">Сравнить две судьбы</h1>
+        <p style="font-family:var(--serif); color:var(--ink-soft); max-width:62ch">
+          Выберите двух людей — из одной эпохи или из разных. Сервис покажет их даты, страны, наследие и пересечения. Это уникальная фича Биографедии — её нет у других порталов.
+        </p>
+      </header>
+
+      <div class="compare__pickers">
+        <div class="compare__picker">
+          <input id="pick-a" placeholder="Первая персона: например, Пушкин" autocomplete="off">
+          <div class="suggest" id="sug-a"></div>
+        </div>
+        <div class="compare__vs">vs</div>
+        <div class="compare__picker">
+          <input id="pick-b" placeholder="Вторая персона: например, Гёте" autocomplete="off">
+          <div class="suggest" id="sug-b"></div>
+        </div>
+      </div>
+
+      <div id="compare-results"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader('compare');
+  BG.mountFooter();
+
+  const params = new URLSearchParams(location.search);
+  let aSlug = params.get('a');
+  let bSlug = params.get('b');
+
+  const pickA = document.getElementById('pick-a');
+  const pickB = document.getElementById('pick-b');
+
+  const setVal = (input, p) => { input.value = p ? (p.shortName || p.name) : ''; };
+
+  if (aSlug && BG.state.bySlug[aSlug]) setVal(pickA, BG.state.bySlug[aSlug]);
+  if (bSlug && BG.state.bySlug[bSlug]) setVal(pickB, BG.state.bySlug[bSlug]);
+
+  BG.attachSearch(pickA, document.getElementById('sug-a'), (p) => {
+    aSlug = p.slug;
+    setVal(pickA, p);
+    updateURL(); render();
+  });
+  BG.attachSearch(pickB, document.getElementById('sug-b'), (p) => {
+    bSlug = p.slug;
+    setVal(pickB, p);
+    updateURL(); render();
+  });
+
+  function updateURL() {
+    const u = new URL(location.href);
+    if (aSlug) u.searchParams.set('a', aSlug); else u.searchParams.delete('a');
+    if (bSlug) u.searchParams.set('b', bSlug); else u.searchParams.delete('b');
+    history.replaceState({}, '', u);
+  }
+
+  function intersectionNote(a, b) {
+    const lines = [];
+    // overlap years
+    const aB = BG.fmtYear(a.birth), aD = a.death ? BG.fmtYear(a.death) : new Date().getUTCFullYear();
+    const bB = BG.fmtYear(b.birth), bD = b.death ? BG.fmtYear(b.death) : new Date().getUTCFullYear();
+    const overlapStart = Math.max(aB, bB);
+    const overlapEnd = Math.min(aD, bD);
+    if (overlapEnd >= overlapStart) {
+      const years = overlapEnd - overlapStart;
+      lines.push(`Жили одновременно ${years} ${years === 1 ? 'год' : (years >= 2 && years <= 4 ? 'года' : 'лет')}: ${overlapStart}—${overlapEnd}.`);
+    } else {
+      const gap = overlapStart - overlapEnd;
+      lines.push(`Не пересекались во времени — между ними ${gap} ${gap === 1 ? 'год' : (gap >= 2 && gap <= 4 ? 'года' : 'лет')}.`);
+    }
+    // era
+    if (a.era === b.era) {
+      const era = BG.state.data.eras.find(e => e.id === a.era);
+      lines.push(`Оба — эпоха «${era?.name}».`);
+    }
+    // category
+    if (a.category === b.category) {
+      const cat = BG.state.data.categories.find(c => c.id === a.category);
+      lines.push(`Оба — ${cat?.name.toLowerCase()}.`);
+    }
+    // country
+    if (a.country === b.country) lines.push(`Оба связаны со страной: ${a.country}.`);
+    // direct relations
+    const rel = (a.relations || []).find(r => r.slug === b.slug) || (b.relations || []).find(r => r.slug === a.slug);
+    if (rel) lines.push(`В нашей базе зафиксирована связь: ${rel.label.toLowerCase()}.`);
+    return lines.length ? lines.join(' ') : 'Прямых пересечений по нашим данным не найдено.';
+  }
+
+  function personCol(p) {
+    const cat = BG.state.data.categories.find(c => c.id === p.category);
+    const era = BG.state.data.eras.find(e => e.id === p.era);
+    const age = BG.ageAtDeath(p);
+    return `
+      <div class="compare__card">
+        <div style="width:120px; height:120px; border-radius:50%; overflow:hidden; margin-bottom:16px">${BG.avatarSVG(p, 240)}</div>
+        <div class="compare__name"><a href="/person.html?slug=${p.slug}">${BG.escapeHtml(p.name)}</a></div>
+        <div class="compare__dates">${BG.fmtLifespan(p)}${age ? ' · ' + age + ' ' + (age === 1 ? 'год' : (age >= 2 && age <= 4 ? 'года' : 'лет')) : ''}</div>
+        <dl>
+          <div class="compare__row"><dt>Категория</dt><dd>${BG.escapeHtml(cat?.name || '')}</dd></div>
+          <div class="compare__row"><dt>Эпоха</dt><dd>${BG.escapeHtml(era?.name || '')}</dd></div>
+          <div class="compare__row"><dt>Страна</dt><dd>${BG.escapeHtml(p.country)}</dd></div>
+          <div class="compare__row"><dt>Место рождения</dt><dd>${BG.escapeHtml(p.city)}</dd></div>
+          <div class="compare__row"><dt>Главные работы</dt><dd>${(p.works || []).slice(0, 3).map(w => BG.escapeHtml(w)).join('<br>') || '—'}</dd></div>
+          <div class="compare__row"><dt>Цитата</dt><dd style="font-family:var(--serif); font-style:italic">${p.quote ? '«' + BG.escapeHtml(p.quote) + '»' : '—'}</dd></div>
+        </dl>
+      </div>`;
+  }
+
+  function render() {
+    const a = aSlug ? BG.state.bySlug[aSlug] : null;
+    const b = bSlug ? BG.state.bySlug[bSlug] : null;
+    const out = document.getElementById('compare-results');
+    if (a && b) {
+      out.innerHTML = `
+        <div class="compare__results">${personCol(a)}${personCol(b)}</div>
+        <div class="compare__intersect"><strong>Что общего:</strong> ${intersectionNote(a, b)}</div>`;
+    } else if (a || b) {
+      out.innerHTML = `<p style="color:var(--ink-mute); padding:32px 0">Выберите вторую персону для сравнения.</p>`;
+    } else {
+      // suggest some pairs
+      const pairs = [
+        ['pushkin','lermontov'], ['tolstoy','dostoevsky'], ['einstein','curie'],
+        ['leonardo','newton'], ['gagarin','korolev'], ['tsoi','vysotsky']
+      ];
+      out.innerHTML = `
+        <div style="margin-top:32px">
+          <h3 style="font-family:var(--serif); margin-bottom:16px">Попробуйте классические пары:</h3>
+          <div class="cards">
+            ${pairs.map(([s1, s2]) => {
+              const p1 = BG.state.bySlug[s1], p2 = BG.state.bySlug[s2];
+              if (!p1 || !p2) return '';
+              return `<a class="card" href="/compare.html?a=${s1}&b=${s2}" style="text-decoration:none">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line)">
+                  <div class="card__portrait" style="aspect-ratio:1">${BG.avatarSVG(p1, 240)}</div>
+                  <div class="card__portrait" style="aspect-ratio:1">${BG.avatarSVG(p2, 240)}</div>
+                </div>
+                <div class="card__body">
+                  <div class="card__title">${BG.escapeHtml(p1.shortName)} <span style="color:var(--ink-mute); font-family:var(--sans); font-weight:400; font-size:13px">vs</span> ${BG.escapeHtml(p2.shortName)}</div>
+                  <div class="card__meta">Открыть сравнение</div>
+                </div>
+              </a>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
+  }
+  render();
+})();
+</script>
+</body>
+</html>

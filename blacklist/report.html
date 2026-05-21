@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Обращение — Реестр HR · Биографедия</title>
+<meta name="description" content="Карточка обращения в реестре HR.">
+<meta name="theme-color" content="#FAFAF5">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container" style="max-width:780px; padding-top:48px; padding-bottom:48px" id="root"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  const reports = await BG.loadReports();
+  BG.mountHeader('blacklist');
+  BG.mountFooter();
+
+  const id = new URLSearchParams(location.search).get('id');
+  const local = JSON.parse(localStorage.getItem('bp-reports') || '[]');
+  const all = [...reports.demoReports, ...local];
+  const r = all.find(x => x.id === id);
+  const root = document.getElementById('root');
+
+  if (!r) {
+    root.innerHTML = `<div class="empty-state"><h3>Обращение не найдено</h3><p><a class="btn" href="/blacklist/">К реестру</a></p></div>`;
+    return;
+  }
+
+  const city = reports.cities.find(c => c.id === r.city);
+  const issues = (r.issueTypes || []).map(it => {
+    const t = reports.issueTypes.find(x => x.id === it);
+    return t ? `<span class="tag">${BG.escapeHtml(t.label)}</span>` : '';
+  }).join('');
+
+  root.innerHTML = `
+    <nav class="person__breadcrumb"><a href="/">Главная</a> · <a href="/blacklist/">Реестр HR</a> · <span>Обращение #${BG.escapeHtml(r.id)}</span></nav>
+
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px">
+      ${r.employerVerified ? '<span class="badge badge--verified" style="font-size:11px; padding:3px 8px; border-radius:999px; background:rgba(34,197,94,0.12); color:#15803d; text-transform:uppercase; letter-spacing:0.08em; font-weight:600">ИНН проверен</span>' : ''}
+      ${r.status === 'moderated' ? '<span class="badge badge--moderated" style="font-size:11px; padding:3px 8px; border-radius:999px; background:var(--accent-wash); color:var(--accent); text-transform:uppercase; letter-spacing:0.08em; font-weight:600">Промодерировано</span>' : '<span class="badge" style="font-size:11px; padding:3px 8px; border-radius:999px; background:var(--bg-muted); color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.08em; font-weight:600">На модерации</span>'}
+    </div>
+
+    <h1 style="margin-bottom:12px">${BG.escapeHtml(r.employerCompany)}</h1>
+    <p style="color:var(--ink-mute); margin-bottom:24px; font-variant-numeric:tabular-nums">
+      ${BG.escapeHtml(city?.name || '')} · ${BG.escapeHtml(r.industry)} · опубликовано ${BG.fmtDate(r.createdAt)}
+    </p>
+
+    <div class="person__infobox">
+      <dl>
+        <dt>Сотрудник</dt><dd>${BG.escapeHtml(r.subjectInitials)} · ${BG.escapeHtml(r.position)}</dd>
+        <dt>ИНН работодателя</dt><dd>${BG.escapeHtml(r.employerInn)}</dd>
+        <dt>Город</dt><dd>${BG.escapeHtml(city?.name || '')}, ${BG.escapeHtml(city?.region || '')}</dd>
+        <dt>Категория</dt><dd>${(r.issueTypes || []).map(it => BG.escapeHtml(reports.issueTypes.find(x => x.id === it)?.label || it)).join(', ')}</dd>
+      </dl>
+    </div>
+
+    <h2 style="font-family:var(--serif); margin-bottom:12px">Описание</h2>
+    <p style="font-family:var(--serif); font-size:1.08rem; line-height:1.7; color:var(--ink-soft); margin-bottom:24px">${BG.escapeHtml(r.summary)}</p>
+
+    ${(r.documents && r.documents.length) ? `
+      <h2 style="font-family:var(--serif); margin-bottom:12px">Подтверждающие документы</h2>
+      <ul style="margin-bottom:24px">
+        ${r.documents.map(d => `<li style="margin-bottom:6px; color:var(--ink-soft)">${BG.escapeHtml(d)}</li>`).join('')}
+      </ul>
+      <p style="font-size:13px; color:var(--ink-mute); margin-bottom:32px">Документы хранятся в защищённом канале. Доступны для проверки модератору и упомянутому лицу по запросу.</p>
+    ` : ''}
+
+    ${r.rightToReply ? `
+      <div style="background:var(--bg-muted); border-radius:10px; padding:20px 24px; margin-bottom:24px">
+        <h3 style="font-family:var(--serif); font-size:1.1rem; margin-bottom:8px">Ответ упомянутого лица</h3>
+        <p style="color:var(--ink-soft); font-family:var(--serif); font-style:italic">${BG.escapeHtml(r.rightToReply)}</p>
+      </div>` : `
+      <div style="background:var(--accent-wash); border-left:3px solid var(--accent); padding:16px 20px; border-radius:0 8px 8px 0; margin-bottom:24px; font-size:14px; color:var(--ink-soft)">
+        <strong style="color:var(--ink); display:block; margin-bottom:4px">Если вы — упомянутое лицо</strong>
+        Вы можете оставить ответ или подать обращение об удалении сведений. <a href="/blacklist/dispute.html?id=${encodeURIComponent(r.id)}">Подать обращение →</a>
+      </div>`}
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap">
+      <a href="/blacklist/" class="btn btn--ghost">← Назад к реестру</a>
+      <a href="/blacklist/dispute.html?id=${encodeURIComponent(r.id)}" class="btn">Оспорить запись</a>
+    </div>
+  `;
+})();
+</script>
+</body>
+</html>

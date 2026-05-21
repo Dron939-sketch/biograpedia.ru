@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Подать обращение — Реестр HR · Биографедия</title>
+<meta name="description" content="Форма подачи обращения работодателя. Верификация по ИНН, обязательная модерация.">
+<meta name="theme-color" content="#FAFAF5">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>
+  form { display:grid; gap:20px; max-width:680px; }
+  fieldset { border:1px solid var(--line); border-radius:10px; padding:20px; background:var(--bg-elevated); }
+  legend { padding:0 8px; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-mute); font-weight:600; }
+  label.field { display:grid; gap:6px; margin-bottom:14px; font-size:14px; color:var(--ink-soft); }
+  label.field:last-child { margin-bottom:0; }
+  label.field span { font-weight:500; color:var(--ink); }
+  label.field small { color:var(--ink-mute); font-size:12px; }
+  input[type=text], input[type=email], input[type=tel], select, textarea {
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px;
+    background:var(--bg); color:var(--ink); font-family:inherit; font-size:14px; outline:none;
+    transition:border-color var(--transition), box-shadow var(--transition);
+  }
+  textarea { min-height:120px; font-family:var(--serif); line-height:1.5; resize:vertical; }
+  input:focus, select:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-wash); }
+  .checkboxes { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:8px; }
+  .checkbox { display:flex; align-items:flex-start; gap:8px; padding:10px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:14px; transition:all var(--transition); }
+  .checkbox:hover { border-color:var(--accent); }
+  .checkbox input { margin-top:3px; accent-color: var(--accent); }
+  .consent { background:var(--accent-wash); padding:16px; border-radius:8px; font-size:13px; color:var(--ink-soft); line-height:1.6; }
+  .consent label { display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+  .consent input { margin-top:4px; accent-color:var(--danger); }
+  .error { color:var(--danger); font-size:13px; margin-top:6px; display:none; }
+  .error.is-visible { display:block; }
+  .success { background:rgba(34, 197, 94, 0.1); border-left:3px solid #16a34a; padding:20px 24px; border-radius:0 10px 10px 0; color:var(--ink); display:none; }
+  .success.is-visible { display:block; }
+  .success h3 { font-family:var(--serif); margin-bottom:8px; color:#15803d; }
+</style>
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container" style="max-width:780px; padding-top:48px; padding-bottom:48px">
+
+    <nav class="person__breadcrumb"><a href="/">Главная</a> · <a href="/blacklist/">Реестр HR</a> · <span>Подать обращение</span></nav>
+
+    <h1 style="margin-bottom:12px">Подать обращение</h1>
+    <p style="font-family:var(--serif); color:var(--ink-soft); margin-bottom:24px; max-width:62ch">
+      Прежде чем заполнять форму — прочитайте, что нельзя публиковать в реестре. Это сэкономит время вам и нашей модерации.
+    </p>
+
+    <div class="legal-banner" style="background:rgba(155, 44, 44, 0.06); border-left:3px solid var(--danger); padding:20px 24px; border-radius:0 10px 10px 0; margin-bottom:24px; font-size:14px; line-height:1.6; color:var(--ink-soft)">
+      <strong style="color:var(--ink); display:block; margin-bottom:6px; font-family:var(--serif); font-size:1rem">Что запрещено публиковать</strong>
+      <ul style="margin:8px 0 0 18px">
+        <li>Полные ФИО без согласия упомянутого лица — используются только инициалы.</li>
+        <li>Фотографии и иные биометрические данные (572-ФЗ).</li>
+        <li>Паспорта, СНИЛС, адреса проживания, контакты, медицинская информация.</li>
+        <li>Утверждения, которые вы не можете подтвердить документами.</li>
+        <li>Оскорбления, угрозы, разжигание ненависти.</li>
+      </ul>
+      <p style="margin-top:8px">Нарушения влекут отказ в публикации, а в части случаев — передачу обращения в правоохранительные органы.</p>
+    </div>
+
+    <div class="success" id="success">
+      <h3>Обращение принято на модерацию</h3>
+      <p>Ваше обращение попало в очередь. Срок рассмотрения — до 5 рабочих дней. Мы свяжемся с вами по указанному e-mail.</p>
+      <p style="margin-top:12px"><a class="btn" href="/blacklist/">← Вернуться в реестр</a></p>
+    </div>
+
+    <form id="report-form">
+      <fieldset>
+        <legend>Шаг 1. Работодатель</legend>
+        <label class="field"><span>Название организации *</span>
+          <input type="text" name="employerCompany" required placeholder="ООО «Ромашка»">
+        </label>
+        <label class="field"><span>ИНН организации *</span><small>10 цифр для юрлица, 12 — для ИП. Будет проверен по реестру ФНС.</small>
+          <input type="text" name="employerInn" required pattern="\d{10}|\d{12}" placeholder="7700000000">
+        </label>
+        <label class="field"><span>Корпоративная почта *</span><small>На неё придёт письмо для подтверждения. Бесплатные домены (mail.ru, gmail.com) не принимаются.</small>
+          <input type="email" name="employerEmail" required placeholder="hr@company.ru">
+        </label>
+        <label class="field"><span>Контактный телефон</span>
+          <input type="tel" name="employerPhone" placeholder="+7 ___ ___ __ __">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Шаг 2. Город и сфера</legend>
+        <label class="field"><span>Город *</span>
+          <select name="city" required id="city-select"></select>
+        </label>
+        <label class="field"><span>Сфера деятельности *</span>
+          <input type="text" name="industry" required placeholder="ИТ и разработка, розница, общепит…">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Шаг 3. Сотрудник</legend>
+        <p style="font-size:13px; color:var(--ink-mute); margin-bottom:12px">Публично отображаются только инициалы. Полное ФИО видно сторонам после авторизации.</p>
+        <label class="field"><span>Инициалы (публично) *</span><small>Например: «И. И.»</small>
+          <input type="text" name="subjectInitials" required maxlength="10" placeholder="И. И.">
+        </label>
+        <label class="field"><span>Полное ФИО (закрыто) *</span><small>Видно только сторонам, в публичной части не отображается.</small>
+          <input type="text" name="subjectInitialsFull" required placeholder="Иванов Иван Иванович">
+        </label>
+        <label class="field"><span>Должность *</span>
+          <input type="text" name="position" required placeholder="Менеджер по продажам">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Шаг 4. Суть обращения</legend>
+        <label class="field"><span>Категория нарушения *</span></label>
+        <div class="checkboxes" id="issues"></div>
+        <label class="field" style="margin-top:14px"><span>Описание ситуации *</span><small>2–4 предложения. Только факты, без оценок личности. Без угроз и оскорблений.</small>
+          <textarea name="summary" required minlength="40" maxlength="600" placeholder="Опишите ситуацию по фактам. Например: «01.02.2026 сотрудник не вышел на смену без уведомления, при служебной проверке были обнаружены недостача товара на сумму N руб.»"></textarea>
+        </label>
+        <label class="field"><span>Подтверждающие документы (наличие) *</span><small>Перечислите, какие документы у вас есть. После модерации мы попросим их прикрепить через защищённый канал. Не загружайте сюда сканы.</small>
+          <textarea name="documents" required minlength="10" placeholder="Приказ о дисциплинарном взыскании № 12 от 03.02.2026; акт служебного расследования от 05.02.2026; заявление об увольнении по статье."></textarea>
+        </label>
+      </fieldset>
+
+      <div class="consent">
+        <label><input type="checkbox" required>
+          <span>Я понимаю, что несу полную ответственность по ст. 152 ГК РФ и ст. 128.1 УК РФ за достоверность изложенных сведений. У меня есть документы, подтверждающие изложенные факты. Я предоставлю их по запросу модерации. Я не загружаю фотографии лица, паспортные данные и иную биометрическую и медицинскую информацию о сотруднике.</span>
+        </label>
+        <label style="margin-top:10px"><input type="checkbox" required>
+          <span>Я согласен(на) с тем, что упомянутое лицо получит уведомление о публикации и имеет право на ответ либо досудебное обращение об удалении в соответствии с правилами реестра.</span>
+        </label>
+        <label style="margin-top:10px"><input type="checkbox" required>
+          <span>Я даю согласие на обработку моих персональных данных (наименование организации, ИНН, контакты) в соответствии с 152-ФЗ.</span>
+        </label>
+      </div>
+
+      <div class="error" id="form-error">Пожалуйста, заполните все обязательные поля и подтвердите согласия.</div>
+
+      <div style="display:flex; gap:12px">
+        <button type="submit" class="btn">Отправить на модерацию</button>
+        <a href="/blacklist/" class="btn btn--ghost">Отмена</a>
+      </div>
+    </form>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  const reports = await BG.loadReports();
+  BG.mountHeader('blacklist');
+  BG.mountFooter();
+
+  // city select
+  const citySel = document.getElementById('city-select');
+  citySel.innerHTML = '<option value="">— выберите —</option>' + reports.cities.map(c => `<option value="${c.id}">${BG.escapeHtml(c.name)}</option>`).join('');
+
+  // issues
+  document.getElementById('issues').innerHTML = reports.issueTypes.map(t => `
+    <label class="checkbox"><input type="checkbox" name="issueTypes" value="${t.id}"> <span>${BG.escapeHtml(t.label)}</span></label>
+  `).join('');
+
+  // submit (demo: save to localStorage)
+  document.getElementById('report-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const issueTypes = [...e.target.querySelectorAll('input[name="issueTypes"]:checked')].map(x => x.value);
+    if (!issueTypes.length) {
+      document.getElementById('form-error').textContent = 'Укажите хотя бы одну категорию нарушения.';
+      document.getElementById('form-error').classList.add('is-visible');
+      return;
+    }
+    const rec = {
+      id: 'rep-' + Date.now(),
+      status: 'pending',
+      createdAt: new Date().toISOString().slice(0, 10),
+      employerCompany: fd.get('employerCompany'),
+      employerInn: fd.get('employerInn'),
+      employerVerified: false,
+      city: fd.get('city'),
+      industry: fd.get('industry'),
+      subjectInitials: fd.get('subjectInitials'),
+      subjectInitialsFull: fd.get('subjectInitialsFull'),
+      position: fd.get('position'),
+      issueTypes,
+      summary: fd.get('summary'),
+      documents: [fd.get('documents')],
+      disputes: 0
+    };
+    const local = JSON.parse(localStorage.getItem('bp-reports') || '[]');
+    local.push(rec);
+    localStorage.setItem('bp-reports', JSON.stringify(local));
+
+    document.getElementById('report-form').style.display = 'none';
+    const ok = document.getElementById('success');
+    ok.classList.add('is-visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

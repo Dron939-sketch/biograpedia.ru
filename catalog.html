@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Каталог персон — Биографедия</title>
+<meta name="description" content="Каталог биографий: фильтр по категориям, эпохам, странам и поисковому запросу.">
+<meta name="theme-color" content="#FAFAF5">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container">
+    <section class="catalog">
+      <header class="catalog__head">
+        <h1 class="catalog__title" id="cat-title">Каталог персон</h1>
+        <div class="catalog__count" id="cat-count">—</div>
+      </header>
+
+      <div class="catalog__layout">
+        <aside class="filters" id="filters"></aside>
+
+        <div>
+          <div class="sort">
+            <label for="sort-select">Сортировка:</label>
+            <select id="sort-select">
+              <option value="name">По имени</option>
+              <option value="birth-asc">По дате рождения (старые → новые)</option>
+              <option value="birth-desc">По дате рождения (новые → старые)</option>
+              <option value="era">По эпохе</option>
+            </select>
+          </div>
+          <div class="cards" id="results"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader('catalog');
+  BG.mountFooter();
+
+  const params = new URLSearchParams(location.search);
+  const filters = {
+    cat: params.get('cat') || '',
+    era: params.get('era') || '',
+    country: params.get('country') || '',
+    q: params.get('q') || '',
+  };
+
+  const renderFilters = () => {
+    const people = BG.state.data.people;
+    const countByCat = {};
+    const countByEra = {};
+    const countByCountry = {};
+    people.forEach(p => {
+      countByCat[p.category] = (countByCat[p.category] || 0) + 1;
+      countByEra[p.era] = (countByEra[p.era] || 0) + 1;
+      countByCountry[p.country] = (countByCountry[p.country] || 0) + 1;
+    });
+
+    const filtersEl = document.getElementById('filters');
+    filtersEl.innerHTML = `
+      <div class="filter-group">
+        <div class="filter-group__title">Поиск</div>
+        <div style="position:relative">
+          <input type="search" placeholder="По имени, тегу…" value="${BG.escapeHtml(filters.q)}" id="f-q"
+                 style="width:100%; padding:8px 12px; border:1px solid var(--line); border-radius:6px; background:var(--bg-elevated); color:var(--ink); font-family:inherit; font-size:14px; outline:none">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-group__title">Категория</div>
+        <ul class="filter-list">
+          <li><label><input type="radio" name="cat" value="" ${!filters.cat ? 'checked' : ''}> <span>Все</span> <span class="count" style="margin-left:auto">${people.length}</span></label></li>
+          ${BG.state.data.categories.map(c => `
+            <li><label><input type="radio" name="cat" value="${c.id}" ${filters.cat === c.id ? 'checked' : ''}> <span>${BG.escapeHtml(c.name)}</span> <span class="count" style="margin-left:auto">${countByCat[c.id] || 0}</span></label></li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-group__title">Эпоха</div>
+        <ul class="filter-list">
+          <li><label><input type="radio" name="era" value="" ${!filters.era ? 'checked' : ''}> <span>Все</span></label></li>
+          ${BG.state.data.eras.map(e => `
+            <li><label><input type="radio" name="era" value="${e.id}" ${filters.era === e.id ? 'checked' : ''}> <span>${BG.escapeHtml(e.name)}</span> <span class="count" style="margin-left:auto">${countByEra[e.id] || 0}</span></label></li>
+          `).join('')}
+        </ul>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-group__title">Страна</div>
+        <ul class="filter-list">
+          <li><label><input type="radio" name="country" value="" ${!filters.country ? 'checked' : ''}> <span>Все</span></label></li>
+          ${Object.entries(countByCountry).sort((a,b) => b[1]-a[1]).slice(0, 8).map(([c, n]) => `
+            <li><label><input type="radio" name="country" value="${BG.escapeHtml(c)}" ${filters.country === c ? 'checked' : ''}> <span>${BG.escapeHtml(c)}</span> <span class="count" style="margin-left:auto">${n}</span></label></li>
+          `).join('')}
+        </ul>
+      </div>
+    `;
+
+    filtersEl.addEventListener('change', (e) => {
+      if (e.target.name) {
+        filters[e.target.name] = e.target.value;
+        updateURL();
+        renderResults();
+      }
+    });
+    let qTimer;
+    filtersEl.addEventListener('input', (e) => {
+      if (e.target.id === 'f-q') {
+        clearTimeout(qTimer);
+        qTimer = setTimeout(() => { filters.q = e.target.value; updateURL(); renderResults(); }, 200);
+      }
+    });
+  };
+
+  const updateURL = () => {
+    const u = new URL(location.href);
+    ['cat', 'era', 'country', 'q'].forEach(k => {
+      if (filters[k]) u.searchParams.set(k, filters[k]);
+      else u.searchParams.delete(k);
+    });
+    history.replaceState({}, '', u);
+  };
+
+  const renderResults = () => {
+    let list = BG.state.data.people.slice();
+    if (filters.cat) list = list.filter(p => p.category === filters.cat);
+    if (filters.era) list = list.filter(p => p.era === filters.era);
+    if (filters.country) list = list.filter(p => p.country === filters.country);
+    if (filters.q) {
+      const q = filters.q.toLowerCase();
+      list = list.filter(p => {
+        const hay = `${p.name} ${p.shortName} ${p.tags.join(' ')} ${p.tagline} ${p.country} ${p.city}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    const sort = document.getElementById('sort-select').value;
+    if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    else if (sort === 'birth-asc') list.sort((a, b) => a.birth.localeCompare(b.birth));
+    else if (sort === 'birth-desc') list.sort((a, b) => b.birth.localeCompare(a.birth));
+    else if (sort === 'era') {
+      const eraOrder = Object.fromEntries(BG.state.data.eras.map((e, i) => [e.id, i]));
+      list.sort((a, b) => (eraOrder[a.era] ?? 99) - (eraOrder[b.era] ?? 99));
+    }
+
+    // title
+    const cat = BG.state.data.categories.find(c => c.id === filters.cat);
+    const era = BG.state.data.eras.find(e => e.id === filters.era);
+    const parts = [];
+    if (cat) parts.push(cat.name);
+    if (era) parts.push(era.name);
+    if (filters.country) parts.push(filters.country);
+    if (filters.q) parts.push(`«${filters.q}»`);
+    document.getElementById('cat-title').textContent = parts.length ? parts.join(' · ') : 'Каталог персон';
+    document.title = (parts.length ? parts.join(' · ') : 'Каталог персон') + ' · Биографедия';
+
+    const cnt = list.length;
+    const word = cnt % 10 === 1 && cnt % 100 !== 11 ? 'персона' : (cnt % 10 >= 2 && cnt % 10 <= 4 && (cnt % 100 < 12 || cnt % 100 > 14) ? 'персоны' : 'персон');
+    document.getElementById('cat-count').textContent = `Найдено: ${cnt} ${word}`;
+
+    const results = document.getElementById('results');
+    if (!list.length) {
+      results.outerHTML = '<div class="cards" id="results"><div class="empty-state" style="grid-column:1/-1"><h3>Ничего не нашлось</h3><p>Попробуйте сбросить фильтры или изменить поисковый запрос.</p></div></div>';
+      return;
+    }
+    results.outerHTML = `<div class="cards" id="results">${list.map(BG.personCard).join('')}</div>`;
+  };
+
+  renderFilters();
+  document.getElementById('sort-select').addEventListener('change', renderResults);
+  renderResults();
+})();
+</script>
+</body>
+</html>

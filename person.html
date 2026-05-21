@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title id="page-title">Биография — Биографедия</title>
+<meta name="description" id="page-desc" content="Биография — даты, факты, хронология, наследие.">
+<meta name="theme-color" content="#FAFAF5">
+<meta property="og:type" content="profile">
+<meta property="og:locale" content="ru_RU">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container">
+    <article class="person" id="person"></article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader();
+  BG.mountFooter();
+
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('slug');
+  const p = BG.state.bySlug[slug];
+
+  if (!p) {
+    document.getElementById('person').innerHTML = `
+      <div class="empty-state">
+        <h3>Персона не найдена</h3>
+        <p>В нашей базе пока нет страницы с таким идентификатором.</p>
+        <p style="margin-top:16px"><a class="btn" href="/catalog.html">Открыть каталог</a></p>
+      </div>`;
+    return;
+  }
+
+  const cat = BG.state.data.categories.find(c => c.id === p.category);
+  const era = BG.state.data.eras.find(e => e.id === p.era);
+  const age = BG.ageAtDeath(p);
+
+  // SEO
+  const ttl = `${p.shortName || p.name} — биография, факты, хронология`;
+  document.getElementById('page-title').textContent = ttl + ' · Биографедия';
+  document.title = ttl + ' · Биографедия';
+  document.getElementById('page-desc').setAttribute('content', p.tagline);
+
+  // JSON-LD Person
+  const jsonld = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": p.name,
+    "alternateName": p.shortName,
+    "birthDate": p.birth,
+    "deathDate": p.death || undefined,
+    "birthPlace": p.city,
+    "nationality": p.country,
+    "description": p.tagline,
+    "url": "https://biograpedia.ru/person.html?slug=" + p.slug
+  };
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.textContent = JSON.stringify(jsonld);
+  document.head.appendChild(s);
+
+  // breadcrumb
+  document.getElementById('person').innerHTML = `
+    <nav class="person__breadcrumb"><a href="/">Главная</a> · <a href="/catalog.html?cat=${cat?.id}">${BG.escapeHtml(cat?.name || '')}</a></nav>
+
+    <header class="person__head">
+      <div class="person__portrait">${BG.avatarSVG(p, 560)}</div>
+      <div>
+        <h1 class="person__name">${BG.escapeHtml(p.name)}</h1>
+        <div class="person__tagline">${BG.escapeHtml(p.tagline)}</div>
+        <div class="person__dates">
+          ${BG.fmtDate(p.birth)}${p.death ? ' — ' + BG.fmtDate(p.death) : ''}
+          ${age ? ` · прожил${p.name.endsWith('а') ? 'а' : ''} ${age} ${age === 1 ? 'год' : (age >= 2 && age <= 4 ? 'года' : 'лет')}` : ''}
+        </div>
+        <div class="person__tags">
+          ${p.tags.map(t => `<span class="tag">${BG.escapeHtml(t)}</span>`).join('')}
+        </div>
+      </div>
+    </header>
+
+    <div class="person__infobox">
+      <dl>
+        <dt>Категория</dt><dd><a href="/catalog.html?cat=${cat?.id}">${BG.escapeHtml(cat?.name || '')}</a></dd>
+        <dt>Эпоха</dt><dd><a href="/catalog.html?era=${era?.id}">${BG.escapeHtml(era?.name || '')}</a></dd>
+        <dt>Место рождения</dt><dd>${BG.escapeHtml(p.city)}, ${BG.escapeHtml(p.country)}</dd>
+        <dt>Дата рождения</dt><dd>${BG.fmtDate(p.birth)}</dd>
+        ${p.death ? `<dt>Дата смерти</dt><dd>${BG.fmtDate(p.death)}</dd>` : ''}
+      </dl>
+    </div>
+
+    <div class="person__body">
+      <div class="person__main">
+        <h2>Биография</h2>
+        ${p.bio.map(par => `<p>${BG.escapeHtml(par)}</p>`).join('')}
+
+        ${p.quote ? `<blockquote class="person__quote">«${BG.escapeHtml(p.quote)}»</blockquote>` : ''}
+
+        ${p.facts && p.facts.length ? `
+          <h2>Любопытные факты</h2>
+          <div class="facts">
+            ${p.facts.map(f => `<div class="fact">${BG.escapeHtml(f)}</div>`).join('')}
+          </div>` : ''}
+
+        ${p.works && p.works.length ? `
+          <h2>Главные работы</h2>
+          <ul>${p.works.map(w => `<li>${BG.escapeHtml(w)}</li>`).join('')}</ul>` : ''}
+      </div>
+
+      <aside class="person__aside">
+        ${p.timeline && p.timeline.length ? `
+          <div class="aside-block">
+            <h3>Хронология</h3>
+            <div class="timeline">
+              ${p.timeline.map(t => `
+                <div class="timeline__item">
+                  <span class="timeline__dot"></span>
+                  <div class="timeline__year">${t.year}</div>
+                  <div class="timeline__event">${BG.escapeHtml(t.event)}</div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
+
+        ${p.relations && p.relations.length ? `
+          <div class="aside-block">
+            <h3>Связи</h3>
+            <ul>${p.relations.map(r => {
+              const other = BG.state.bySlug[r.slug];
+              if (!other) return '';
+              return `<li><a href="/person.html?slug=${other.slug}">${BG.escapeHtml(other.shortName || other.name)}</a><br><span style="color:var(--ink-mute); font-size:12px">${BG.escapeHtml(r.label)}</span></li>`;
+            }).join('')}</ul>
+          </div>` : ''}
+
+        <div class="aside-block">
+          <h3>Действия</h3>
+          <ul>
+            <li><a href="/compare.html?a=${p.slug}">Сравнить с другой персоной</a></li>
+            <li><a href="/catalog.html?cat=${cat?.id}">Все в категории «${BG.escapeHtml(cat?.name || '')}»</a></li>
+            <li><a href="/catalog.html?era=${era?.id}">Все в эпохе «${BG.escapeHtml(era?.name || '')}»</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:64px; padding-top:32px; border-top:1px solid var(--line)">
+      <h2 style="font-family:var(--serif); margin-bottom:24px">Современники и соседи по эпохе</h2>
+      <div class="cards" id="related"></div>
+    </section>
+  `;
+
+  // related: same era, not self
+  const sameEra = BG.state.data.people.filter(x => x.era === p.era && x.slug !== p.slug).slice(0, 4);
+  document.getElementById('related').innerHTML = sameEra.length
+    ? sameEra.map(BG.personCard).join('')
+    : '<p style="color:var(--ink-mute)">Пока нет других персон в этой эпохе.</p>';
+})();
+</script>
+</body>
+</html>

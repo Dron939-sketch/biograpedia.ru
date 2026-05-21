@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "disclaimer": "Все записи в реестре носят характер субъективных оценок работодателей. Опубликованы только после модерации. Каждое упомянутое лицо имеет право на ответ и досудебное обращение об удалении. Сведения, не подтверждённые документами или признанные недостоверными, удаляются.",
+  "cities": [
+    { "id": "moscow", "name": "Москва", "region": "Москва" },
+    { "id": "spb", "name": "Санкт-Петербург", "region": "Санкт-Петербург" },
+    { "id": "novosibirsk", "name": "Новосибирск", "region": "Новосибирская область" },
+    { "id": "ekaterinburg", "name": "Екатеринбург", "region": "Свердловская область" },
+    { "id": "kazan", "name": "Казань", "region": "Татарстан" },
+    { "id": "n-novgorod", "name": "Нижний Новгород", "region": "Нижегородская область" },
+    { "id": "chelyabinsk", "name": "Челябинск", "region": "Челябинская область" },
+    { "id": "samara", "name": "Самара", "region": "Самарская область" },
+    { "id": "omsk", "name": "Омск", "region": "Омская область" },
+    { "id": "rostov", "name": "Ростов-на-Дону", "region": "Ростовская область" },
+    { "id": "ufa", "name": "Уфа", "region": "Башкортостан" },
+    { "id": "krasnoyarsk", "name": "Красноярск", "region": "Красноярский край" },
+    { "id": "perm", "name": "Пермь", "region": "Пермский край" },
+    { "id": "voronezh", "name": "Воронеж", "region": "Воронежская область" },
+    { "id": "volgograd", "name": "Волгоград", "region": "Волгоградская область" },
+    { "id": "krasnodar", "name": "Краснодар", "region": "Краснодарский край" }
+  ],
+  "issueTypes": [
+    { "id": "discipline", "label": "Нарушение дисциплины" },
+    { "id": "theft", "label": "Хищение или растрата" },
+    { "id": "incompetence", "label": "Некомпетентность" },
+    { "id": "conflict", "label": "Конфликтное поведение" },
+    { "id": "ndabreach", "label": "Нарушение коммерческой тайны" },
+    { "id": "noshow", "label": "Прогулы и срывы графика" }
+  ],
+  "demoReports": [
+    {
+      "id": "demo-1",
+      "status": "moderated",
+      "createdAt": "2026-04-12",
+      "city": "moscow",
+      "industry": "Розничная торговля",
+      "employerCompany": "ООО «Демо-Образец»",
+      "employerInn": "7700000000",
+      "employerVerified": true,
+      "subjectInitials": "И. И.",
+      "subjectInitialsFull": "Иванов И. И.",
+      "position": "Менеджер по продажам",
+      "issueTypes": ["noshow", "discipline"],
+      "summary": "Демонстрационная запись. Реальные обращения публикуются только после ручной модерации и с подтверждающими документами.",
+      "documents": ["Заявление об увольнении за прогул (демо)"],
+      "rightToReply": null,
+      "disputes": 0
+    },
+    {
+      "id": "demo-2",
+      "status": "moderated",
+      "createdAt": "2026-03-28",
+      "city": "spb",
+      "industry": "ИТ и разработка",
+      "employerCompany": "ООО «Пример Софт»",
+      "employerInn": "7800000000",
+      "employerVerified": true,
+      "subjectInitials": "П. П.",
+      "subjectInitialsFull": "Петров П. П.",
+      "position": "Frontend-разработчик",
+      "issueTypes": ["ndabreach"],
+      "summary": "Демонстрационная запись. Все примеры обезличены, реальные ФИО не публикуются.",
+      "documents": ["NDA (выдержка)", "Акт служебного расследования (демо)"],
+      "rightToReply": "Сотрудник вправе оставить ответ — он публикуется рядом с записью.",
+      "disputes": 0
+    }
+  ]
+}

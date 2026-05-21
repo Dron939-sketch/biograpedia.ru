@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Биографедия — биографии великих людей: точно, ёмко, без рекламы</title>
+<meta name="description" content="Биографии писателей, учёных, музыкантов и других выдающихся людей. Структурированные факты, хронология, связи, цитаты — без шума и баннеров.">
+<meta name="theme-color" content="#FAFAF5">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Биографедия — биографии великих людей">
+<meta property="og:description" content="Биографии писателей, учёных, музыкантов и других выдающихся людей. Структурированные факты, хронология, связи.">
+<meta property="og:locale" content="ru_RU">
+<link rel="canonical" href="https://biograpedia.ru/">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Биографедия",
+  "url": "https://biograpedia.ru/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://biograpedia.ru/catalog.html?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero__inner">
+      <div>
+        <span class="hero__eyebrow">Биографический портал</span>
+        <h1 class="hero__title">Великие люди, рассказанные <em>точно</em> и без рекламы.</h1>
+        <p class="hero__lead">Проверенные факты, хронология жизни, связи между людьми и эпохами, цитаты из источников. Никаких поп-апов, баннеров и копипасты с других сайтов.</p>
+        <form class="hero__search" role="search" onsubmit="event.preventDefault(); const q=this.querySelector('input').value.trim(); if(q) location.href='/catalog.html?q='+encodeURIComponent(q);">
+          <span id="hero-icon"></span>
+          <input type="search" placeholder="Найти Пушкина, Менделеева, Эйнштейна…" aria-label="Поиск персон" id="hero-search" autocomplete="off">
+          <div class="suggest" id="hero-suggest"></div>
+        </form>
+        <div class="hero__hints">
+          <span>Попробуйте:</span>
+          <a href="/person.html?slug=pushkin">Пушкин</a>
+          <a href="/person.html?slug=mendeleev">Менделеев</a>
+          <a href="/person.html?slug=einstein">Эйнштейн</a>
+          <a href="/person.html?slug=tsoi">Цой</a>
+        </div>
+      </div>
+      <aside class="hero__quote" id="quote-of-day"></aside>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2 class="section__title"><small>Сегодня · <span id="today-date"></span></small>В этот день</h2>
+      <a class="section__link" href="/catalog.html">Все персоны</a>
+    </div>
+    <div class="today" id="today"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2 class="section__title"><small>Категории</small>Где искать</h2>
+    </div>
+    <div class="cat-grid" id="categories"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2 class="section__title"><small>Подборка редакции</small>Чтобы начать</h2>
+      <a class="section__link" href="/catalog.html">Открыть весь каталог</a>
+    </div>
+    <div class="cards" id="featured"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2 class="section__title"><small>Сравнить</small>Две судьбы рядом</h2>
+    </div>
+    <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); margin-bottom:24px; max-width:62ch">
+      Уникальная фича: возьмите двух людей — современников или живших в разные эпохи — и посмотрите рядом их хронологию, страны, наследие и точки пересечения. У других порталов такого нет.
+    </p>
+    <a class="btn" href="/compare.html">Открыть сравнение →</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader();
+  BG.mountFooter();
+
+  // hero search icon
+  document.getElementById('hero-icon').innerHTML = BG.icon('search');
+  const heroInput = document.getElementById('hero-search');
+  const heroSug = document.getElementById('hero-suggest');
+  BG.attachSearch(heroInput, heroSug);
+
+  // today date
+  document.getElementById('today-date').textContent = BG.russianTodayDate();
+  const { born, died } = BG.todayList();
+  const today = document.getElementById('today');
+  today.innerHTML = `
+    <div class="today__col">
+      <h3>Родились в этот день</h3>
+      ${born.length ? `<ul class="today__list">${born.map(p => `
+        <li>
+          <span class="today__year">${BG.fmtYear(p.birth)}</span>
+          <span><a class="today__name" href="/person.html?slug=${p.slug}">${BG.escapeHtml(p.shortName || p.name)}</a><br>
+          <span class="today__what">${BG.escapeHtml(p.tagline.slice(0, 80))}</span></span>
+        </li>`).join('')}</ul>` : '<p class="today__empty">В базе пока нет персон, родившихся в этот день. Скоро будет — каталог растёт.</p>'}
+    </div>
+    <div class="today__col">
+      <h3>Ушли в этот день</h3>
+      ${died.length ? `<ul class="today__list">${died.map(p => `
+        <li>
+          <span class="today__year">${BG.fmtYear(p.death)}</span>
+          <span><a class="today__name" href="/person.html?slug=${p.slug}">${BG.escapeHtml(p.shortName || p.name)}</a><br>
+          <span class="today__what">${BG.escapeHtml(p.tagline.slice(0, 80))}</span></span>
+        </li>`).join('')}</ul>` : '<p class="today__empty">В этот день никто из персон базы не покинул нас.</p>'}
+    </div>`;
+
+  // categories
+  document.getElementById('categories').innerHTML = BG.categoriesWithCounts().map(c => `
+    <a class="cat-card" href="/catalog.html?cat=${c.id}" style="--cat-color:${c.color}">
+      <span class="cat-card__icon">${BG.icon(c.icon)}</span>
+      <span>
+        <span class="cat-card__name">${BG.escapeHtml(c.name)}</span>
+        <span class="cat-card__count">${c.count} ${c.count % 10 === 1 && c.count % 100 !== 11 ? 'персона' : (c.count % 10 >= 2 && c.count % 10 <= 4 && (c.count % 100 < 12 || c.count % 100 > 14) ? 'персоны' : 'персон')}</span>
+      </span>
+    </a>`).join('');
+
+  // featured: balanced mix across categories
+  const featured = ['pushkin', 'mendeleev', 'tchaikovsky', 'gagarin', 'leonardo', 'curie', 'tsoi', 'bulgakov']
+    .map(s => BG.state.bySlug[s]).filter(Boolean);
+  document.getElementById('featured').innerHTML = featured.map(BG.personCard).join('');
+
+  // quote of day
+  const day = new Date().getUTCDate() + new Date().getUTCMonth() * 31;
+  const withQuotes = BG.state.data.people.filter(p => p.quote);
+  const qp = withQuotes[day % withQuotes.length];
+  document.getElementById('quote-of-day').innerHTML = `
+    <div class="hero__quote-text">«${BG.escapeHtml(qp.quote)}»</div>
+    <div class="hero__quote-author">— <a href="/person.html?slug=${qp.slug}">${BG.escapeHtml(qp.shortName || qp.name)}</a></div>`;
+})();
+</script>
+</body>
+</html>

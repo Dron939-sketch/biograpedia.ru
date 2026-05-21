@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Реестр HR-обращений по компаниям и городам России — Биографедия</title>
+<meta name="description" content="Реестр обращений работодателей. Модерируемый, с правом ответа упомянутого лица и обязательным подтверждением документами.">
+<meta name="theme-color" content="#FAFAF5">
+<meta name="robots" content="index, follow">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>
+  .legal-banner {
+    background: var(--accent-wash);
+    border-left: 3px solid var(--accent);
+    padding: 20px 24px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 32px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .legal-banner strong { color: var(--ink); display: block; margin-bottom: 6px; font-family: var(--serif); font-size: 1rem; }
+  .legal-banner a { font-weight: 500; }
+
+  .city-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .city-pill {
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition);
+  }
+  .city-pill:hover, .city-pill.is-active { border-color: var(--accent); color: var(--ink); background: var(--bg); }
+  .city-pill .count { color: var(--ink-mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+  .report-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: start;
+  }
+  .report-card__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .report-card__company {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--bg-muted);
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .badge--verified { background: rgba(34, 197, 94, 0.12); color: #15803d; }
+  .badge--moderated { background: var(--accent-wash); color: var(--accent); }
+  .report-card__meta {
+    font-size: 13px;
+    color: var(--ink-mute);
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .report-card__summary {
+    font-family: var(--serif);
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .report-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .report-card__cta {
+    align-self: center;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat {
+    background: var(--bg-muted);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .stat__num {
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .stat__label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  @media (max-width: 640px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .report-card { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container" style="padding-top:48px; padding-bottom:48px">
+
+    <header style="margin-bottom:24px">
+      <div style="display:inline-block; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:12px">Сервис при Биографедии</div>
+      <h1 style="margin-bottom:12px">Реестр HR-обращений</h1>
+      <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); max-width:62ch">
+        Сервис для верифицированных работодателей: сообщить о нарушениях со стороны бывших сотрудников. Модерируется, требует документального подтверждения, упомянутое лицо имеет право ответа.
+      </p>
+    </header>
+
+    <div class="legal-banner">
+      <strong>Правовая рамка</strong>
+      Реестр работает в рамках ст. 152 ГК РФ, 152-ФЗ «О персональных данных» и 572-ФЗ «О биометрии». Публикуем только записи с верификацией работодателя по ИНН и приложенными подтверждающими документами. ФИО сотрудника отображается обезличенно (инициалы), полное имя видно только сторонам после авторизации. Биометрия (фото лица) <strong>не публикуется</strong> без явного согласия субъекта. Упомянутое лицо вправе подать <a href="/blacklist/dispute.html">досудебное обращение об удалении</a> — оно рассматривается в течение 3 рабочих дней.
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:12px">
+      <h2 style="margin:0">Города России</h2>
+      <a class="btn" href="/blacklist/add.html">Подать обращение →</a>
+    </div>
+
+    <div class="city-grid" id="cities"></div>
+
+    <h2 id="reports-title" style="margin-bottom:16px">Обращения</h2>
+    <div id="reports"></div>
+
+    <section style="margin-top:48px; padding-top:32px; border-top:1px solid var(--line)">
+      <h2 style="margin-bottom:16px">Как это работает</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px">
+        <div>
+          <div style="font-family:var(--serif); font-size:2rem; color:var(--accent); font-weight:700">1</div>
+          <h3 style="font-family:var(--serif); margin:8px 0">Верификация</h3>
+          <p style="color:var(--ink-soft); font-size:14px">Работодатель регистрируется по корпоративной почте и ИНН. Проверяем через открытые реестры ФНС.</p>
+        </div>
+        <div>
+          <div style="font-family:var(--serif); font-size:2rem; color:var(--accent); font-weight:700">2</div>
+          <h3 style="font-family:var(--serif); margin:8px 0">Документы</h3>
+          <p style="color:var(--ink-soft); font-size:14px">К каждому обращению прилагаются документы: приказ, акт служебного расследования, заявление, переписка.</p>
+        </div>
+        <div>
+          <div style="font-family:var(--serif); font-size:2rem; color:var(--accent); font-weight:700">3</div>
+          <h3 style="font-family:var(--serif); margin:8px 0">Модерация</h3>
+          <p style="color:var(--ink-soft); font-size:14px">Каждое обращение проходит ручную модерацию до публикации. Сроки рассмотрения — до 5 рабочих дней.</p>
+        </div>
+        <div>
+          <div style="font-family:var(--serif); font-size:2rem; color:var(--accent); font-weight:700">4</div>
+          <h3 style="font-family:var(--serif); margin:8px 0">Право ответа</h3>
+          <p style="color:var(--ink-soft); font-size:14px">Упомянутое лицо получает уведомление и может опубликовать ответ или подать обращение об удалении.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  const reports = await BG.loadReports();
+  BG.mountHeader('blacklist');
+  BG.mountFooter();
+
+  // Merge local user submissions (demo)
+  const local = JSON.parse(localStorage.getItem('bp-reports') || '[]');
+  const all = [...reports.demoReports, ...local];
+
+  const params = new URLSearchParams(location.search);
+  const cityFilter = params.get('city');
+
+  // Stats
+  const verifiedCount = all.filter(r => r.employerVerified).length;
+  const moderatedCount = all.filter(r => r.status === 'moderated').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat__num">${all.length}</div><div class="stat__label">Всего обращений</div></div>
+    <div class="stat"><div class="stat__num">${verifiedCount}</div><div class="stat__label">С верифицированным ИНН</div></div>
+    <div class="stat"><div class="stat__num">${reports.cities.length}</div><div class="stat__label">Городов в реестре</div></div>
+    <div class="stat"><div class="stat__num">100%</div><div class="stat__label">Ручная модерация</div></div>
+  `;
+
+  // Cities
+  const cityCounts = {};
+  all.forEach(r => cityCounts[r.city] = (cityCounts[r.city] || 0) + 1);
+  document.getElementById('cities').innerHTML = reports.cities.map(c => `
+    <a class="city-pill ${cityFilter === c.id ? 'is-active' : ''}" href="?${cityFilter === c.id ? '' : 'city=' + c.id}">
+      <span>${BG.escapeHtml(c.name)}</span>
+      <span class="count">${cityCounts[c.id] || 0}</span>
+    </a>`).join('');
+
+  // Reports
+  const filtered = cityFilter ? all.filter(r => r.city === cityFilter) : all;
+  const reportsEl = document.getElementById('reports');
+  const title = document.getElementById('reports-title');
+  if (cityFilter) {
+    const cityObj = reports.cities.find(c => c.id === cityFilter);
+    title.textContent = `Обращения · ${cityObj?.name || cityFilter}`;
+  }
+  if (!filtered.length) {
+    reportsEl.innerHTML = `<div class="empty-state"><h3>Обращений по этому городу пока нет</h3><p>Будьте первыми — <a href="/blacklist/add.html">подайте обращение</a>.</p></div>`;
+  } else {
+    reportsEl.innerHTML = filtered.map(r => {
+      const cityObj = reports.cities.find(c => c.id === r.city);
+      const issues = (r.issueTypes || []).map(it => {
+        const t = reports.issueTypes.find(x => x.id === it);
+        return t ? `<span class="tag">${BG.escapeHtml(t.label)}</span>` : '';
+      }).join('');
+      return `
+        <div class="report-card">
+          <div>
+            <div class="report-card__head">
+              <span class="report-card__company">${BG.escapeHtml(r.employerCompany)}</span>
+              ${r.employerVerified ? '<span class="badge badge--verified">ИНН проверен</span>' : ''}
+              ${r.status === 'moderated' ? '<span class="badge badge--moderated">Промодерировано</span>' : '<span class="badge">На модерации</span>'}
+            </div>
+            <div class="report-card__meta">
+              ${BG.escapeHtml(cityObj?.name || '')} · ${BG.escapeHtml(r.industry)} · ${BG.escapeHtml(r.position)} · ${BG.escapeHtml(r.subjectInitials)} · ${BG.fmtDate(r.createdAt)}
+            </div>
+            <div class="report-card__summary">${BG.escapeHtml(r.summary)}</div>
+            <div class="report-card__tags">${issues}</div>
+          </div>
+          <a class="btn btn--ghost report-card__cta" href="/blacklist/report.html?id=${encodeURIComponent(r.id)}">Подробнее →</a>
+        </div>`;
+    }).join('');
+  }
+})();
+</script>
+</body>
+</html>

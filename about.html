@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>О проекте — Биографедия</title>
+<meta name="description" content="Биографедия — биографический портал нового поколения. Принципы, миссия и редполитика.">
+<meta name="theme-color" content="#FAFAF5">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header"><div class="site-header__inner"></div></header>
+
+<main>
+  <div class="container" style="max-width:780px; padding-top:56px; padding-bottom:56px">
+    <article class="person__main">
+      <h1 style="margin-bottom:16px">О Биографедии</h1>
+      <p style="font-family:var(--serif); font-size:1.25rem; color:var(--ink-soft); margin-bottom:32px">
+        Биографедия — открытый биографический портал. Мы делаем то, что не делают другие русскоязычные ресурсы: пишем точно, структурируем факты и показываем связи между людьми.
+      </p>
+
+      <h2>Наши принципы</h2>
+      <p><strong>Точность важнее охвата.</strong> Лучше 50 проверенных биографий, чем 5000 копий со старого сайта. Каждая запись — со ссылками на источники.</p>
+      <p><strong>Структура.</strong> Хронология, инфобокс, факты, цитаты, главные работы, связи с другими людьми. Это удобнее, чем «полотно» текста.</p>
+      <p><strong>Без рекламы и поп-апов.</strong> Никаких баннеров, всплывающих окон, авто-плееров. Только текст.</p>
+      <p><strong>Быстро.</strong> Сайт открывается за полсекунды на любом устройстве. Никакого тяжёлого фронтенда.</p>
+      <p><strong>Открытый код.</strong> Все материалы и сам сайт лежат в открытом репозитории на GitHub. Поправки принимаются через pull request.</p>
+
+      <h2>Что у нас уникального</h2>
+      <ul>
+        <li><strong>Сравнение двух персон</strong> — нигде больше нет.</li>
+        <li><strong>Граф связей</strong> между людьми: учителя, ученики, современники.</li>
+        <li><strong>Хронологические эпохи</strong> с фильтрами.</li>
+        <li><strong>Виджет «В этот день»</strong> родились и ушли.</li>
+        <li><strong>Тёмная тема</strong> по умолчанию по системе.</li>
+      </ul>
+
+      <h2>Реестр работодателей</h2>
+      <p>Отдельным сервисом на домене работает <a href="/blacklist/">реестр HR-обращений по компаниям</a>. Это <strong>не</strong> часть биографического портала: разные тематика, аудитория и редполитика. Реестр модерируется, упомянутые лица имеют право ответа, любые публикации без подтверждающих документов снимаются.</p>
+
+      <h2>Связаться</h2>
+      <p>Открытые задачи и обсуждения — в репозитории <a href="https://github.com/dron939-sketch/biograpedia.ru">biograpedia.ru</a> на GitHub.</p>
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner"></div>
+    <div class="site-footer__bottom"></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script>
+(async () => {
+  await BG.loadData();
+  BG.mountHeader();
+  BG.mountFooter();
+})();
+</script>
+</body>
+</html>
