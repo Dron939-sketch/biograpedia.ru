@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Биографедия — биографии великих людей: точно, ёмко, без рекламы</title>
 <meta name="description" content="Биографии писателей, учёных, музыкантов и других выдающихся людей. Структурированные факты, хронология, связи, цитаты — без шума и баннеров.">
-<meta name="theme-color" content="#FAFAF5">
+<meta name="theme-color" content="#0F0E1A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Биографедия — биографии великих людей">
 <meta property="og:description" content="Биографии писателей, учёных, музыкантов и других выдающихся людей. Структурированные факты, хронология, связи.">
@@ -15,7 +15,7 @@
 <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap">
 <link rel="stylesheet" href="/assets/css/style.css">
 <script type="application/ld+json">
 {
@@ -37,27 +37,76 @@
 
 <main>
 
-<section class="hero">
+<section class="brand-hero">
   <div class="container">
-    <div class="hero__inner">
+    <div class="brand-hero__inner">
       <div>
-        <span class="hero__eyebrow">Биографический портал</span>
-        <h1 class="hero__title">Великие люди, рассказанные <em>точно</em> и без рекламы.</h1>
-        <p class="hero__lead">Проверенные факты, хронология жизни, связи между людьми и эпохами, цитаты из источников. Никаких поп-апов, баннеров и копипасты с других сайтов.</p>
-        <form class="hero__search" role="search" onsubmit="event.preventDefault(); const q=this.querySelector('input').value.trim(); if(q) location.href='/catalog.html?q='+encodeURIComponent(q);">
+        <span class="brand-hero__badge">База обновлена сегодня · <span id="people-count">33</span> персоны</span>
+        <h1 class="brand-hero__title">Великие люди.<br>Рассказанные <em>точно.</em></h1>
+        <p class="brand-hero__lead">Биографии писателей, учёных, музыкантов и художников — со структурированными фактами, хронологией, связями и атласом городов. Без рекламы. Без поп-апов. Без копипасты.</p>
+        <form class="brand-hero__search" role="search" onsubmit="event.preventDefault(); const q=this.querySelector('input').value.trim(); if(q) location.href='/catalog.html?q='+encodeURIComponent(q);">
           <span id="hero-icon"></span>
-          <input type="search" placeholder="Найти Пушкина, Менделеева, Эйнштейна…" aria-label="Поиск персон" id="hero-search" autocomplete="off">
+          <input type="search" placeholder="Найдите Пушкина, Менделеева, Эйнштейна…" aria-label="Поиск персон" id="hero-search" autocomplete="off">
+          <span class="brand-hero__kbd">↵</span>
           <div class="suggest" id="hero-suggest"></div>
         </form>
-        <div class="hero__hints">
-          <span>Попробуйте:</span>
+        <div class="brand-hero__hints">
+          <span>Часто ищут:</span>
           <a href="/person.html?slug=pushkin">Пушкин</a>
           <a href="/person.html?slug=mendeleev">Менделеев</a>
           <a href="/person.html?slug=einstein">Эйнштейн</a>
           <a href="/person.html?slug=tsoi">Цой</a>
+          <a href="/compare.html">Сравнить двоих</a>
         </div>
       </div>
-      <aside class="hero__quote" id="quote-of-day"></aside>
+      <aside class="brand-hero__panel" id="hero-panel"></aside>
+    </div>
+  </div>
+</section>
+
+<section class="stat-strip">
+  <div class="stat-strip__inner">
+    <div class="stat-strip__item">
+      <div class="stat-strip__num" id="stat-people">33</div>
+      <div class="stat-strip__label">биографии в базе</div>
+    </div>
+    <div class="stat-strip__item">
+      <div class="stat-strip__num" id="stat-cities">16</div>
+      <div class="stat-strip__label">городов рождений</div>
+    </div>
+    <div class="stat-strip__item">
+      <div class="stat-strip__num" id="stat-cats">8</div>
+      <div class="stat-strip__label">категорий деятельности</div>
+    </div>
+    <div class="stat-strip__item">
+      <div class="stat-strip__num">0&nbsp;₽</div>
+      <div class="stat-strip__label">всегда и для всех</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header">
+      <h2 class="section__title"><small>Почему мы</small>Чем отличаемся от Википедии</h2>
+    </div>
+    <div class="feature-trio">
+      <div class="feature-card">
+        <div class="feature-card__icon" id="ft-icon-1"></div>
+        <h3>Факты, а не полотно</h3>
+        <p>Каждая биография разобрана на хронологию, инфобокс, связи, цитаты и главные работы. Никаких длинных абзацев, в которых тонут даты.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon" id="ft-icon-2"></div>
+        <h3>Связи между людьми</h3>
+        <p>Учитель → ученик, соратники, соперники, влияния. Кликните по любой связи — и провалитесь в новую биографию. Сравнение двух судеб бок о бок — только у нас.</p>
+        <a class="feature-card__link" href="/compare.html">Открыть сравнение →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card__icon" id="ft-icon-3"></div>
+        <h3>Без рекламы и навсегда</h3>
+        <p>Никаких баннеров, поп-апов, «продолжите чтение через 5 секунд» и трекеров. Открытый код, открытые данные, открытый процесс правок через GitHub.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -66,7 +115,7 @@
   <div class="container">
     <div class="section__header">
       <h2 class="section__title"><small>Сегодня · <span id="today-date"></span></small>В этот день</h2>
-      <a class="section__link" href="/catalog.html">Все персоны</a>
+      <a class="section__link" href="/catalog.html">Весь каталог</a>
     </div>
     <div class="today" id="today"></div>
   </div>
@@ -75,16 +124,7 @@
 <section class="section">
   <div class="container">
     <div class="section__header">
-      <h2 class="section__title"><small>Категории</small>Где искать</h2>
-    </div>
-    <div class="cat-grid" id="categories"></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section__header">
-      <h2 class="section__title"><small>Подборка редакции</small>Чтобы начать</h2>
+      <h2 class="section__title"><small>Подборка редакции</small>С чего начать</h2>
       <a class="section__link" href="/catalog.html">Открыть весь каталог</a>
     </div>
     <div class="cards" id="featured"></div>
@@ -94,25 +134,45 @@
 <section class="section">
   <div class="container">
     <div class="section__header">
-      <h2 class="section__title"><small>Атлас</small>Города и их люди</h2>
-      <a class="section__link" href="/cities.html">Все города</a>
+      <h2 class="section__title"><small>Где искать</small>Категории</h2>
     </div>
-    <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); margin-bottom:24px; max-width:62ch">
-      Где родились те, чьи имена пережили эпохи. Кликните город — увидите всех его уроженцев из нашей базы.
-    </p>
-    <div id="top-cities" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px"></div>
+    <div class="cat-grid" id="categories"></div>
   </div>
 </section>
 
 <section class="section">
   <div class="container">
     <div class="section__header">
-      <h2 class="section__title"><small>Сравнить</small>Две судьбы рядом</h2>
+      <h2 class="section__title"><small>Атлас</small>Города и их люди</h2>
+      <a class="section__link" href="/cities.html">Все города</a>
     </div>
-    <p style="font-family:var(--serif); font-size:1.15rem; color:var(--ink-soft); margin-bottom:24px; max-width:62ch">
-      Уникальная фича: возьмите двух людей — современников или живших в разные эпохи — и посмотрите рядом их хронологию, страны, наследие и точки пересечения. У других порталов такого нет.
+    <p style="font-family:var(--serif); font-size:1.2rem; color:var(--ink-soft); margin-bottom:28px; max-width:62ch">
+      Где родились те, чьи имена пережили эпохи. Кликните город — увидите всех его уроженцев.
     </p>
-    <a class="btn" href="/compare.html">Открыть сравнение →</a>
+    <div class="cat-grid" id="top-cities"></div>
+  </div>
+</section>
+
+<section class="manifesto">
+  <div class="container">
+    <div class="manifesto__inner">
+      <span class="manifesto__eyebrow">Манифест</span>
+      <p class="manifesto__text">Биография — это не <em>«родился, женился, умер»</em>. Это сцепление дат, мест, людей и решений, из которых получилась судьба. Мы делаем так, чтобы это сцепление <em>было видно</em>.</p>
+      <div class="manifesto__sign">— Биографедия</div>
+    </div>
+  </div>
+</section>
+
+<section class="big-cta">
+  <div class="container">
+    <div class="big-cta__inner">
+      <h2>Сравните две судьбы рядом</h2>
+      <p>Уникальная фича: возьмите двух человек — современников или из разных эпох — и посмотрите рядом их хронологию, страны, наследие и точки пересечения.</p>
+      <div class="big-cta__buttons">
+        <a class="btn btn--lg btn--invert" href="/compare.html">Открыть сравнение</a>
+        <a class="btn btn--lg" href="/catalog.html" style="background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.20); box-shadow: none">Каталог персон</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -137,6 +197,27 @@
   const heroInput = document.getElementById('hero-search');
   const heroSug = document.getElementById('hero-suggest');
   BG.attachSearch(heroInput, heroSug);
+
+  // counts
+  const people = BG.state.data.people;
+  document.getElementById('people-count').textContent = people.length;
+  document.getElementById('stat-people').textContent = people.length;
+  document.getElementById('stat-cities').textContent = Object.keys(BG.state.byCity).length;
+  document.getElementById('stat-cats').textContent = BG.state.data.categories.length;
+
+  // hero quote panel
+  const day = new Date().getUTCDate() + new Date().getUTCMonth() * 31;
+  const withQuotes = people.filter(p => p.quote);
+  const qp = withQuotes[day % withQuotes.length];
+  document.getElementById('hero-panel').innerHTML = `
+    <div class="brand-hero__panel-label">Цитата дня</div>
+    <div class="brand-hero__quote">«${BG.escapeHtml(qp.quote)}»</div>
+    <div class="brand-hero__quote-author">— <a href="/person.html?slug=${qp.slug}">${BG.escapeHtml(qp.shortName || qp.name)}</a> · ${BG.fmtLifespan(qp.birth, qp.death)}</div>`;
+
+  // feature icons
+  document.getElementById('ft-icon-1').innerHTML = BG.icon('feather');
+  document.getElementById('ft-icon-2').innerHTML = BG.icon('atom');
+  document.getElementById('ft-icon-3').innerHTML = BG.icon('shield');
 
   // today date
   document.getElementById('today-date').textContent = BG.russianTodayDate();
@@ -172,7 +253,7 @@
       </span>
     </a>`).join('');
 
-  // featured: balanced mix across categories
+  // featured
   const featured = ['pushkin', 'mendeleev', 'tchaikovsky', 'gagarin', 'leonardo', 'curie', 'tsoi', 'bulgakov']
     .map(s => BG.state.bySlug[s]).filter(Boolean);
   document.getElementById('featured').innerHTML = featured.map(BG.personCard).join('');
@@ -192,14 +273,6 @@
       </span>
     </a>`;
   }).join('');
-
-  // quote of day
-  const day = new Date().getUTCDate() + new Date().getUTCMonth() * 31;
-  const withQuotes = BG.state.data.people.filter(p => p.quote);
-  const qp = withQuotes[day % withQuotes.length];
-  document.getElementById('quote-of-day').innerHTML = `
-    <div class="hero__quote-text">«${BG.escapeHtml(qp.quote)}»</div>
-    <div class="hero__quote-author">— <a href="/person.html?slug=${qp.slug}">${BG.escapeHtml(qp.shortName || qp.name)}</a></div>`;
 })();
 </script>
 </body>
